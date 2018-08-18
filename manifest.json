@@ -1,0 +1,26 @@
+{
+    "manifest_version": "2",
+    "api_version": "1",
+    "name": "Currency Converter",
+    "description": "Converts between currencies",
+    "developer_name": "Bruno Paz",
+    "icon": "images/icon.png",
+    "options": {
+        "query_debounce": 0.2
+    },
+    "preferences": [{
+            "id": "kw",
+            "type": "keyword",
+            "name": "Currency Converter",
+            "description": "Currency Conversion",
+            "default_value": "currency"
+        },
+        {
+            "id": "api_key",
+            "type": "input",
+            "name": "Fixer API key",
+            "description": "API key for Fixer.io API. Get yours <a href=\"https://fixer.io/quickstart\">here</a>",
+            "default_value": ""
+        }
+    ]
+}
