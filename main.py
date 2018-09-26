@@ -14,7 +14,7 @@ from ulauncher.api.shared.action.CopyToClipboardAction import CopyToClipboardAct
 LOGGER = logging.getLogger(__name__)
 
 CONVERTER_API_BASE_URL = 'http://data.fixer.io/api'
-REGEX = r"(\d+\.?\d*)\s([a-zA-Z]{3})\sto\s([a-zA-Z]{3})"
+REGEX = r"(\d+\.?\d*)\s*([a-zA-Z]{3})\s(to|in)\s([a-zA-Z]{3})"
 
 
 class CurrencyConverterExtension(Extension):
@@ -76,7 +76,7 @@ class KeywordQueryEventListener(EventListener):
 
             amount = params[0]
             from_currency = params[1].upper()
-            to_currency = params[2].upper()
+            to_currency = params[3].upper()
 
             value = extension.convert_currency(
                 amount, from_currency, to_currency)
