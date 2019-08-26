@@ -1,8 +1,9 @@
 """Ulauncher extension main  class"""
 
+import re
+import locale
 import logging
 import requests
-import re
 from ulauncher.api.client.Extension import Extension
 from ulauncher.api.client.EventListener import EventListener
 from ulauncher.api.shared.event import KeywordQueryEvent
@@ -16,7 +17,6 @@ LOGGER = logging.getLogger(__name__)
 CONVERTER_API_BASE_URL = 'http://data.fixer.io/api'
 REGEX = r"(\d+\.?\d*)\s*([a-zA-Z]{3})\s(to|in)\s([a-zA-Z]{3})"
 
-
 class CurrencyConverterExtension(Extension):
     """ Main extension class """
 
@@ -24,6 +24,7 @@ class CurrencyConverterExtension(Extension):
         """ init method """
         super(CurrencyConverterExtension, self).__init__()
         LOGGER.info("Initialzing Currency Converter extension")
+        locale.setlocale(locale.LC_ALL, '')
         self.subscribe(KeywordQueryEvent, KeywordQueryEventListener())
 
     def convert_currency(self, amount, from_currency, to_currency):
@@ -48,7 +49,7 @@ class CurrencyConverterExtension(Extension):
 
         result = (float(amount) / rates[from_currency]) * rates[to_currency]
 
-        return str(round(result, 2))
+        return locale.format_string("%.2f", result, grouping=True)
 
 
 class KeywordQueryEventListener(EventListener):
