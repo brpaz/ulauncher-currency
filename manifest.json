@@ -7,7 +7,8 @@
     "options": {
         "query_debounce": 0.2
     },
-    "preferences": [{
+    "preferences": [
+        {
             "id": "kw",
             "type": "keyword",
             "name": "Currency Converter",
