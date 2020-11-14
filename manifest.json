@@ -19,7 +19,7 @@
             "id": "api_key",
             "type": "input",
             "name": "Fixer API key",
-            "description": "API key for Fixer.io API. Get yours <a href=\"https://fixer.io/quickstart\">here</a>",
+            "description": "API key for Fixer.io API. You can get yours at: https://fixer.io/quickstart",
             "default_value": ""
         }
     ]
