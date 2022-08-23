@@ -14,9 +14,7 @@ from ulauncher.api.shared.action.CopyToClipboardAction import CopyToClipboardAct
 
 LOGGER = logging.getLogger(__name__)
 
-CONVERTER_API_BASE_URL = 'http://data.fixer.io/api'
 REGEX = r"(\d+\.?\d*)\s*([a-zA-Z]{3})\s(to|in)\s([a-zA-Z]{3})"
-
 
 class CurrencyConverterExtension(Extension):
     """ Main extension class """
@@ -30,12 +28,11 @@ class CurrencyConverterExtension(Extension):
     def convert_currency(self, amount, from_currency, to_currency):
         """ Converts an amount from one currency to another """
 
-        params = {
-            'access_key': self.preferences['api_key'],
-            'symbols': '%s,%s' % (from_currency, to_currency)
-        }
+        CONVERTER_API_URL = 'https://api.apilayer.com/fixer/convert?to={}&from={}&amount={}'.format(to_currency, from_currency, amount)
 
-        r = requests.get("%s/latest" % CONVERTER_API_BASE_URL, params=params)
+        headers = {'apikey': self.preferences['api_key']}
+        
+        r = requests.get(CONVERTER_API_URL, headers=headers)
         response = r.json()
 
         if r.status_code != 200:
@@ -45,11 +42,7 @@ class CurrencyConverterExtension(Extension):
         if not response['success']:
             raise ConversionException(response['error']['info'])
 
-        # Calculate the amount from the conversion rates.
-        # Fixer.io base Currency is Eur.
-        rates = response['rates']
-
-        result = (float(amount) / rates[from_currency]) * rates[to_currency]
+        result = response['result']
 
         return locale.format_string("%.2f", result, grouping=True)
 
