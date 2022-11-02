@@ -14,7 +14,7 @@ from ulauncher.api.shared.action.CopyToClipboardAction import CopyToClipboardAct
 
 LOGGER = logging.getLogger(__name__)
 
-CONVERTER_API_BASE_URL = 'http://data.fixer.io/api'
+CONVERTER_API_BASE_URL = 'https://api.apilayer.com/fixer'
 REGEX = r"(\d+\.?\d*)\s*([a-zA-Z]{3})\s(to|in)\s([a-zA-Z]{3})"
 
 
@@ -30,12 +30,15 @@ class CurrencyConverterExtension(Extension):
     def convert_currency(self, amount, from_currency, to_currency):
         """ Converts an amount from one currency to another """
 
+        headers = {
+            'apikey' : self.preferences['api_key']
+        }
+
         params = {
-            'access_key': self.preferences['api_key'],
             'symbols': '%s,%s' % (from_currency, to_currency)
         }
 
-        r = requests.get("%s/latest" % CONVERTER_API_BASE_URL, params=params)
+        r = requests.get("%s/latest" % CONVERTER_API_BASE_URL, headers=headers, params=params)
         response = r.json()
 
         if r.status_code != 200:
