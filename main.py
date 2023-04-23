@@ -35,8 +35,17 @@ class CurrencyConverterExtension(Extension):
             'symbols': '%s,%s' % (from_currency, to_currency)
         }
 
-        r = requests.get("%s/latest" % CONVERTER_API_BASE_URL, params=params)
-        response = r.json()
+        try:
+            r = requests.get("%s/latest" % CONVERTER_API_BASE_URL, params=params)
+        except requests.exceptions.HTTPError:
+            raise ConversionException("Error connecting to conversion service, service offline")
+        except requests.exceptions.RequestException:
+            raise ConversionException("Error connecting to conversion service, bad URL")
+        
+        try:
+            response = r.json()
+        except json.JSONDecodeError:
+            raise ConversionException("Invalid JSON response from service")
 
         if r.status_code != 200:
             raise ConversionException(
