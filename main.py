@@ -29,29 +29,28 @@ class CurrencyConverterExtension(Extension):
 
     def convert_currency(self, amount, from_currency, to_currency):
         """ Converts an amount from one currency to another """
+        try:
+            # Fetch the conversion rates with the specified base currency
+            url = f"https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/{from_currency.lower()}.json"
+            r = requests.get(url)
+            response = r.json()
 
-        params = {
-            'access_key': self.preferences['api_key'],
-            'symbols': '%s,%s' % (from_currency, to_currency)
-        }
+            if r.status_code != 200:
+                raise ConversionException("Error connecting to conversion service.")
 
-        r = requests.get("%s/latest" % CONVERTER_API_BASE_URL, params=params)
-        response = r.json()
+            # Get the rate for the target currency
+            to_rate = response[from_currency.lower()].get(to_currency.lower())
 
-        if r.status_code != 200:
-            raise ConversionException(
-                "Error connecting to conversion service.")
+            if to_rate is None:
+                raise ConversionException("Currency not found.")
 
-        if not response['success']:
-            raise ConversionException(response['error']['info'])
+            # Calculate the amount from the conversion rates
+            result = float(amount) * to_rate
 
-        # Calculate the amount from the conversion rates.
-        # Fixer.io base Currency is Eur.
-        rates = response['rates']
+            return locale.format_string("%.2f", result, grouping=True)
 
-        result = (float(amount) / rates[from_currency]) * rates[to_currency]
-
-        return locale.format_string("%.2f", result, grouping=True)
+        except Exception as e:
+            raise ConversionException(f"An error occurred: {str(e)}")
 
 
 class KeywordQueryEventListener(EventListener):
